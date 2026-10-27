@@ -25,7 +25,7 @@ Remove-Variable memKeyValue
 $env:MEMORY_RETRIEVAL_MODE = 'context'
 $env:MEMORY_DB_PATH = Join-Path $PSScriptRoot 'work\learning-c.db'
 $env:MEMORY_API_BASE = "http://127.0.0.1:$Port"
-Write-Host "Mem C | mode=context | $env:MEMORY_API_BASE"
+Write-Host "MemTrace | mode=context | $env:MEMORY_API_BASE"
 Write-Host "Database: $env:MEMORY_DB_PATH"
 & $memPython -m uvicorn app:app --host 127.0.0.1 --port $Port
 exit $LASTEXITCODE

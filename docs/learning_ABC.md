@@ -22,7 +22,7 @@
 源码保存点位于项目的 `versions` 文件夹：
 
 ```text
-E:\Mem\versions\
+E:\MemTrace\versions\
     A-dense-v1.zip
     B-hybrid-v1.zip
     C-context-v1.zip
@@ -33,7 +33,7 @@ A 保存修改前的原始实现；B/C 共享可切换算法代码，快照中�
 以后保存一个新的实验版本：
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 .\.venv\Scripts\python.exe scripts\save_checkpoint.py C --revision v2
 ```
 
@@ -44,7 +44,7 @@ cd E:\Mem
 打开 PowerShell，执行：
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 .\.venv\Scripts\python.exe scripts\compare_versions_demo.py
 ```
 
@@ -148,7 +148,7 @@ $env:MEMORY_RETRIEVAL_MODE = 'context'  # C
 ## 6 跑离线测试
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 .\.venv\Scripts\python.exe -m unittest discover -s tests -p test_retrieval_versions.py -v
 ```
 
@@ -163,7 +163,7 @@ cd E:\Mem
 在终端 1 检查两个变量是否存在，只输出 True/False，不显示密钥：
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 [bool]$env:DASHSCOPE_API_KEY
 [bool]$env:MEMORY_API_KEY
 ```
@@ -174,7 +174,7 @@ cd E:\Mem
 
 ```powershell
 $env:MEMORY_RETRIEVAL_MODE = 'context'
-$env:MEMORY_DB_PATH = 'E:\Mem\work\learning-c.db'
+$env:MEMORY_DB_PATH = 'E:\MemTrace\work\learning-c.db'
 .\.venv\Scripts\python.exe -m uvicorn app:app --host 127.0.0.1 --port 8001
 ```
 
@@ -183,7 +183,7 @@ $env:MEMORY_DB_PATH = 'E:\Mem\work\learning-c.db'
 终端 2：
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 $env:MEMORY_API_BASE = 'http://127.0.0.1:8001'
 Invoke-RestMethod http://127.0.0.1:8001/health
 ```

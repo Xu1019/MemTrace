@@ -1,6 +1,10 @@
-# Mem
+# MemTrace
 
-面向对话场景的记忆存储与检索服务。Mem 将原始消息保存到 SQLite，通过向量检索与 BM25 混合召回，并补充同一会话中的相邻消息，为上层应用提供有来源的记忆片段。
+**迹忆 · 融合语义与关键词检索的可追溯对话记忆系统。**
+
+[GitHub 仓库](https://github.com/Xu1019/MemTrace)
+
+面向对话场景的记忆存储与检索服务。MemTrace 将原始消息保存到 SQLite，通过向量检索与 BM25 混合召回，并补充同一会话中的相邻消息，为上层应用提供有来源的记忆片段。
 
 服务基于 FastAPI，提供写入、检索和健康检查接口。检索流程使用嵌入模型，不包含生成式大模型调用；回答生成可由调用方完成。
 
@@ -24,26 +28,26 @@
 
 ## 参考来源与方法改动
 
-Mem 以现有的 FastAPI / SQLite 向量检索实现为基础，结合标准 BM25 与 RRF 方法进行扩展。主要设计参考如下：
+MemTrace 以现有的 FastAPI / SQLite 向量检索实现为基础，结合标准 BM25 与 RRF 方法进行扩展。主要设计参考如下：
 
 - **[ReFind](https://github.com/imlrz/ReFind)**（Ruizhe Li 等）：参考其基于原始对话的 BM25 检索与相邻上下文扩展思路。原始工作见论文 [When Your Agent Opens the Chat App: Agent-Controlled Search over Raw Chat Logs Rivals Structured Memory](https://arxiv.org/abs/2608.12888)。
 - **[FlowGrid AML Retriever](https://github.com/dlxeva/flowgrid-aml-retriever)**（维护者账号：dlxeva）：参考其保留原始消息、关联来源 ID、结合邻接上下文与融合排序的设计，方法说明见该项目 README。
 - **[AML 官方接入规范](https://agentmemoryleaderboard.ai/api-guide)**：用于对齐 Add / Search 请求响应、用户隔离和同步写入行为。
 
-相对原有的纯向量检索，Mem 增加了 BM25 词法召回、RRF 排名融合，以及有数量预算的同会话上下文补全；同时保留角色和来源时间，并完善请求幂等与内容冲突检查。词法处理包含中文单字与相邻双字匹配。
+相对原有的纯向量检索，MemTrace 增加了 BM25 词法召回、RRF 排名融合，以及有数量预算的同会话上下文补全；同时保留角色和来源时间，并完善请求幂等与内容冲突检查。词法处理包含中文单字与相邻双字匹配。
 
-上述开源项目作为方法设计参考，未直接移植其检索源码；`ranking.py` 中的 BM25、RRF 和上下文逻辑按标准公式及本项目需求单独实现。Mem 未复现 ReFind 的 LLM 多轮检索规划，也未实现 FlowGrid 的完整多视图索引与时间更新排序，当前流程不包含生成式 LLM 调用。
+上述开源项目作为方法设计参考，未直接移植其检索源码；`ranking.py` 中的 BM25、RRF 和上下文逻辑按标准公式及本项目需求单独实现。MemTrace 未复现 ReFind 的 LLM 多轮检索规划，也未实现 FlowGrid 的完整多视图索引与时间更新排序，当前流程不包含生成式 LLM 调用。
 
 ## 快速开始
 
-以下命令使用 Windows PowerShell，假定项目位于 `E:\Mem`。已验证的运行环境为 Python 3.13.2。
+以下命令使用 Windows PowerShell，假定项目位于 `E:\MemTrace`。已验证的运行环境为 Python 3.13.2。
 
 ### 安装依赖
 
 已有可用的 `.venv` 时可跳过此步骤。
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
@@ -55,14 +59,14 @@ $env:DASHSCOPE_API_KEY = '<嵌入服务的 API Key>'
 $env:MEMORY_API_KEY = '<自行设置的服务访问密钥>'
 ```
 
-`DASHSCOPE_API_KEY` 用于访问嵌入模型，`MEMORY_API_KEY` 用于调用 Mem。嵌入服务地址和模型参数目前在 [`embedding.py`](embedding.py) 中配置；接入其他环境时，需确认服务地址与密钥匹配。
+`DASHSCOPE_API_KEY` 用于访问嵌入模型，`MEMORY_API_KEY` 用于调用 MemTrace。嵌入服务地址和模型参数目前在 [`embedding.py`](embedding.py) 中配置；接入其他环境时，需确认服务地址与密钥匹配。
 
 启动脚本优先读取当前进程的密钥，缺失时读取 Windows 用户环境变量。已配置好密钥时无需重复设置；项目不会自动读取 `.env` 文件。
 
 ### 启动服务
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File E:\Mem\start_c.ps1
+powershell -ExecutionPolicy Bypass -File E:\MemTrace\start.ps1
 ```
 
 | 配置项 | 启动脚本使用的值 |
@@ -75,7 +79,7 @@ powershell -ExecutionPolicy Bypass -File E:\Mem\start_c.ps1
 保持启动终端运行，按 `Ctrl+C` 停止服务。停止服务不会删除已保存的数据。需要更换端口时：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File E:\Mem\start_c.ps1 -Port 8002
+powershell -ExecutionPolicy Bypass -File E:\MemTrace\start.ps1 -Port 8002
 ```
 
 ### 检查服务
@@ -162,17 +166,17 @@ Content-Type: application/json
 | 环境变量 | 说明 |
 |---|---|
 | `DASHSCOPE_API_KEY` | 嵌入服务密钥 |
-| `MEMORY_API_KEY` | Mem 接口访问密钥 |
+| `MEMORY_API_KEY` | MemTrace 接口访问密钥 |
 | `MEMORY_DB_PATH` | SQLite 数据库路径 |
 | `MEMORY_RETRIEVAL_MODE` | 检索模式：`dense`、`bm25`、`hybrid`、`context` |
 | `MEMORY_API_BASE` | `test_api.py` 等客户端脚本使用的服务地址 |
 
-`start_c.ps1` 会将模式固定为 `context`，数据库固定为项目下的 `work\learning-c.db`。需要自定义模式、数据库或监听地址时，可在配置密钥后直接启动：
+`start.ps1` 会将模式固定为 `context`，数据库固定为项目下的 `work\learning-c.db`。需要自定义模式、数据库或监听地址时，可在配置密钥后直接启动：
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 $env:MEMORY_RETRIEVAL_MODE = 'context'
-$env:MEMORY_DB_PATH = 'E:\Mem\work\learning-c.db'
+$env:MEMORY_DB_PATH = 'E:\MemTrace\work\learning-c.db'
 .\.venv\Scripts\python.exe -m uvicorn app:app --host 127.0.0.1 --port 8001
 ```
 
@@ -181,14 +185,14 @@ $env:MEMORY_DB_PATH = 'E:\Mem\work\learning-c.db'
 ## 项目结构
 
 ```text
-Mem/
+MemTrace/
 ├── app.py                       # HTTP 接口、请求校验和鉴权
 ├── memory_db.py                 # SQLite 存储、请求幂等和来源信息
 ├── embedding.py                 # 嵌入模型客户端
 ├── retrieval.py                 # 检索服务入口
 ├── ranking.py                   # 向量、BM25、RRF 和上下文算法
 ├── retrieval_config.py          # 检索配置
-├── start_c.ps1                  # Windows 本地启动脚本
+├── start.ps1                  # Windows 本地启动脚本
 ├── requirements.txt            # 依赖版本
 ├── test_api.py                  # 真实 HTTP 接口检查
 ├── tests/                       # 离线测试
@@ -205,7 +209,7 @@ Mem/
 离线测试使用模拟嵌入和临时数据库，不调用真实模型：
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 .\.venv\Scripts\python.exe -m unittest discover -s tests -p test_retrieval_versions.py -v
 .\.venv\Scripts\python.exe -m unittest discover -s tests -p test_locomo_adapter.py -v
 ```
@@ -213,7 +217,7 @@ cd E:\Mem
 服务运行后，可在另一个终端执行真实接口检查。先确保客户端环境中设置了与服务相同的 `MEMORY_API_KEY`：
 
 ```powershell
-cd E:\Mem
+cd E:\MemTrace
 $env:MEMORY_API_BASE = 'http://127.0.0.1:8001'
 .\.venv\Scripts\python.exe test_api.py
 ```

@@ -15,7 +15,7 @@ import os
 import secrets
 
 
-app = FastAPI()
+app = FastAPI(title="MemTrace", description="Traceable conversational memory retrieval")
 
 init_db()
 
