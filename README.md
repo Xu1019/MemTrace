@@ -38,7 +38,13 @@ MemTrace 以现有的 FastAPI / SQLite 向量检索实现为基础，结合标�
 
 上述开源项目作为方法设计参考，未直接移植其检索源码；`ranking.py` 中的 BM25、RRF 和上下文逻辑按标准公式及本项目需求单独实现。MemTrace 未复现 ReFind 的 LLM 多轮检索规划，也未实现 FlowGrid 的完整多视图索引与时间更新排序，当前流程不包含生成式 LLM 调用。
 
-## 快速开始
+## 服务器部署与参赛接入
+
+Linux 部署步骤、后台服务和 Nginx 配置见 [服务器部署说明](docs/DEPLOYMENT.md)。参赛申请所需的系统介绍、接口地址和运行参数见 [参赛填写说明](docs/SUBMISSION.md)。
+
+当前已在 Ubuntu 22.04 / Python 3.10 环境完成服务器部署，公网健康检查及真实 Add / Search 接口检查通过。官方平台的准入审核、Smoke 和 Full 评测仍需另行完成。
+
+## Windows 本地运行
 
 以下命令使用 Windows PowerShell，假定项目位于 `E:\MemTrace`。已验证的运行环境为 Python 3.13.2。
 
