@@ -22,6 +22,18 @@
 
 默认模式为 `context`。参数集中在 [`retrieval_config.py`](retrieval_config.py)：RRF 常数为 60，相邻窗口为前后各 1 条，上下文补全名额按返回上限的 25% 向上取整，并至少保留一个直接命中。没有可靠来源顺序时，不推测相邻关系。
 
+## 参考来源与方法改动
+
+Mem 以现有的 FastAPI / SQLite 向量检索实现为基础，结合标准 BM25 与 RRF 方法进行扩展。主要设计参考如下：
+
+- **[ReFind](https://github.com/imlrz/ReFind)**（Ruizhe Li 等）：参考其基于原始对话的 BM25 检索与相邻上下文扩展思路。原始工作见论文 [When Your Agent Opens the Chat App: Agent-Controlled Search over Raw Chat Logs Rivals Structured Memory](https://arxiv.org/abs/2608.12888)。
+- **[FlowGrid AML Retriever](https://github.com/dlxeva/flowgrid-aml-retriever)**（维护者账号：dlxeva）：参考其保留原始消息、关联来源 ID、结合邻接上下文与融合排序的设计，方法说明见该项目 README。
+- **[AML 官方接入规范](https://agentmemoryleaderboard.ai/api-guide)**：用于对齐 Add / Search 请求响应、用户隔离和同步写入行为。
+
+相对原有的纯向量检索，Mem 增加了 BM25 词法召回、RRF 排名融合，以及有数量预算的同会话上下文补全；同时保留角色和来源时间，并完善请求幂等与内容冲突检查。词法处理包含中文单字与相邻双字匹配。
+
+上述开源项目作为方法设计参考，未直接移植其检索源码；`ranking.py` 中的 BM25、RRF 和上下文逻辑按标准公式及本项目需求单独实现。Mem 未复现 ReFind 的 LLM 多轮检索规划，也未实现 FlowGrid 的完整多视图索引与时间更新排序，当前流程不包含生成式 LLM 调用。
+
 ## 快速开始
 
 以下命令使用 Windows PowerShell，假定项目位于 `E:\Mem`。已验证的运行环境为 Python 3.13.2。
