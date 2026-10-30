@@ -1,6 +1,7 @@
 from memory_db import get_memories
 from ranking import cosine_similarity, rank_memories
 from retrieval_config import get_mode
+from query_embedding import embed_query
 
 
 def search_memories(user_id, query, top_k=3, mode=None):
@@ -15,7 +16,7 @@ def search_memories(user_id, query, top_k=3, mode=None):
     query_vector = None
     if mode != "bm25" and any(m.get("embedding") is not None for m in memories):
         from embedding import embed_texts
-        query_vector = embed_texts([query])[0]
+        query_vector = embed_query(query, embed_texts)
     return rank_memories(memories, user_id, query, query_vector, top_k, mode)
 
 
